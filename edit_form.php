@@ -14,7 +14,7 @@ include "header.php";
         $conn = new mysqli('localhost', 'baki', 'user_baki_pass', 'todoapp');
 
         if ($conn->connect_error) {
-            die ("Connection failed: " . $conn->connect_error);
+            die("Connection failed: " . $conn->connect_error);
         }
 
         $todo_id = $_GET['id'];
@@ -31,7 +31,7 @@ include "header.php";
 
             <div style="min-height: 100vh;"
                 class="container mx-auto py-10 md:w-4/5 w-11/12 px-6 overflow-y-auto max-h-screen">
-                <form method="post" action="update_todo.php" onsubmit="return validateForm()">
+                <form method="post" action="update_todo.php" onsubmit="return validateForm()" enctype="multipart/form-data">
                     <div class="m-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-4">
                             <input type="hidden" name="id" value="<?php echo $todo['id']; ?>">
@@ -60,6 +60,12 @@ include "header.php";
                                     class="h-4 w-4 mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">Completed
                             </p>
 
+                            <div>
+                                <label for="attachment"
+                                    class="block text-2xl font-medium leading-6 text-gray-900">Attachment</label>
+                                <input type="file" id="attachment" name="attachment" accept="image/*,.epub,.pdf"
+                                    class="mt-2">
+                            </div>
 
                             <button type="submit" name="submit"
                                 class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Update</button>

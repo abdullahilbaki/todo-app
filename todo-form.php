@@ -4,13 +4,15 @@
 <?php
 $title = "To Do App";
 include "header.php";
+
 ?>
 
 <body>
     <div class="w-full h-full flex flex-no-wrap">
         <?php include "sidebar.php"; ?>
-        <div class="container mx-auto py-10 h-64 md:w-4/5 w-11/12 px-6">
-            <form method="post" action="add_todo.php" onsubmit="return validateForm()">
+        <div style="min-height: 100vh;"
+            class="container mx-auto py-10 h-64 md:w-4/5 w-11/12 px-6 overflow-y-auto max-h-screen">
+            <form method="post" action="add_todo.php" onsubmit="return validateForm()" enctype="multipart/form-data">
                 <div class="m-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-4">
                         <label for="task" class="block text-2xl font-medium leading-6 text-gray-900">Title</label>
@@ -36,6 +38,13 @@ include "header.php";
                             <input id="completed" name="completed" type="checkbox"
                                 class="h-4 w-4 mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">Completed
                         </p>
+
+                        <div>
+                            <label for="attachment"
+                                class="block text-2xl font-medium leading-6 text-gray-900">Attachment</label>
+                            <input type="file" id="attachment" name="attachment" accept="image/*,.epub,.pdf"
+                                class="mt-2">
+                        </div>
 
                         <button type="submit" name="submit"
                             class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Create</button>

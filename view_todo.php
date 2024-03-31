@@ -23,7 +23,7 @@ include "header.php";
                 $conn = new mysqli('localhost', 'baki', 'user_baki_pass', 'todoapp');
 
                 if ($conn->connect_error) {
-                    die ("Connection failed: " . $conn->connect_error);
+                    die("Connection failed: " . $conn->connect_error);
                 }
 
                 $todo_id = $_GET['id'];
@@ -41,18 +41,24 @@ include "header.php";
                     $create_date = date("F j, Y, g:i:s a", strtotime($todo['created_at']));
                     $update_date = ($todo['updated_at_display'] !== NULL && $todo['created_at'] !== $todo['updated_at_display']) ? date("F j, Y, g:i:s a", strtotime($todo['updated_at_display'])) : NULL;
                     ?>
-                    <p class='text-gray-700'>
-                        <span class="font-semibold">Created:</span>
-                        <span class="italic">
-                            <?php echo $create_date; ?>
-                        </span>
-                        <?php if ($update_date !== NULL) { ?>
-                            <span class="font-semibold">Last updated:</span>
+                    <div class="flex justify-between">
+                        <p class='text-gray-700'>
+                            <span class="font-semibold">Created:</span>
                             <span class="italic">
-                                <?php echo $update_date; ?>
+                                <?php echo $create_date; ?>
                             </span>
+                        </p>
+                        <?php if ($update_date !== NULL) { ?>
+                            <p class='text-gray-700 text-right'>
+
+                                <span class="font-semibold">Last updated:</span>
+                                <span class="italic">
+                                    <?php echo $update_date; ?>
+                                </span>
+                            </p>
                         <?php } ?>
-                    </p>
+                    </div>
+
                     <p class='py-5 text-2xl font-semibold mb-4'>
                         <?php echo $todo['task']; ?>
                     </p>

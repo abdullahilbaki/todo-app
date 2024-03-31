@@ -38,13 +38,14 @@ include "header.php";
                 while ($row = $result->fetch_assoc()) {
                     ?>
                     <div
-                        class="border-b border-gray-300 py-4  <?php echo isset ($_GET['id']) && $_GET['id'] == $row['id'] ? "active" : ""; ?>">
+                        class="border-b border-gray-300 py-4  <?php echo isset($_GET['id']) && $_GET['id'] == $row['id'] ? "active" : ""; ?>">
                         <li class='text-white flex items-center justify-between'>
                             <div class="flex">
                                 <input type="checkbox" style="display: none;" value="<?php echo $row['id']; ?>"
                                     class="todo-checkbox h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <a href="view_todo.php?id=<?php echo $row['id']; ?>" class="block ml-2 hover:text-indigo-600"
+                                <a href="view_todo.php?id=<?php echo $row['id']; ?>" class="block ml-2 hover:text-blue-600"
                                     title="View item">
+
                                     <?php echo ($row['completed']) ? "<del>" . $row['task'] . "</del>" : $row['task'] ?>
                                 </a>
                             </div>
