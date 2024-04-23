@@ -1,59 +1,94 @@
 <?php
 
-// Function to establish a database connection
-function connectToDatabase()
-{
-    $conn = new mysqli('localhost', 'baki', 'user_baki_pass', 'todoapp');
-    if ($conn->connect_error) {
-        die ("Connection failed: " . $conn->connect_error);
-    }
-    return $conn;
-}
+include "db_conn.php";
 
-// Function to delete a single todo item by ID
 function deleteTodoById($conn, $todo_id)
 {
+
     $sql_delete = "DELETE FROM todos WHERE id = ?";
     $stmt_delete = $conn->prepare($sql_delete);
     $stmt_delete->bind_param("i", $todo_id);
     $stmt_delete->execute();
     $stmt_delete->close();
+
 }
 
-// Function to delete multiple todo items by IDs
+function delete_directory($dir)
+{
+    if (!file_exists($dir)) {
+        return true;
+    }
+
+    if (!is_dir($dir)) {
+        return unlink($dir);
+    }
+
+    foreach (scandir($dir) as $item) {
+        if ($item == '.' || $item == '..') {
+            continue;
+        }
+
+        if (!delete_directory($dir . DIRECTORY_SEPARATOR . $item)) {
+            return false;
+        }
+    }
+
+    return rmdir($dir);
+}
+
+function deleteFilesById($conn, $todo_id)
+{
+
+    $sql_delete = "DELETE FROM files WHERE todo_id = ?";
+    $stmt_delete = $conn->prepare($sql_delete);
+    $stmt_delete->bind_param("i", $todo_id);
+    $stmt_delete->execute();
+    $stmt_delete->close();
+    delete_directory("uploads/files/$todo_id");
+}
+
 function deleteTodosByIds($conn, $ids)
 {
-    $placeholders = implode(',', array_fill(0, count($ids), '?'));
-    $sql = "DELETE FROM todos WHERE id IN ($placeholders)";
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
-        $types = str_repeat('i', count($ids)); // 'i' represents integer data type
-        $stmt->bind_param($types, ...$ids);
-        $stmt->execute();
-        $stmt->close();
-    } else {
-        echo "Error: Unable to prepare SQL statement.";
-    }
+    $sql_delete = "DELETE FROM todos WHERE id IN (" . implode(',', array_fill(0, count($ids), '?')) . ")";
+    $stmt_delete = $conn->prepare($sql_delete);
+    $types = str_repeat('i', count($ids));
+    $stmt_delete->bind_param($types, ...$ids);
+    $stmt_delete->execute();
+    $stmt_delete->close();
+
+
 }
 
-// Main code logic
+function deleteFilesByIds($conn, $ids)
+{
+    $sql_delete = "DELETE FROM files WHERE todo_id IN (" . implode(',', array_fill(0, count($ids), '?')) . ")";
+    $stmt_delete = $conn->prepare($sql_delete);
+    $types = str_repeat('i', count($ids));
+    $stmt_delete->bind_param($types, ...$ids);
+    $stmt_delete->execute();
+    $stmt_delete->close();
 
-// Ensure that IDs are provided in the URL
-if (isset ($_GET['id']) && !empty ($_GET['id'])) {
+    foreach ($ids as $id) {
+        deleteFilesById($conn, $id);
+    }
+
+}
+
+if (isset($_GET['id']) && !empty($_GET['id'])) {
     $todo_id = $_GET['id'];
-    $conn = connectToDatabase();
+    deleteFilesById($conn, $todo_id);
     deleteTodoById($conn, $todo_id);
     $conn->close();
     header("Location: /");
-    exit(); // Ensure no further execution after redirection
+    exit();
 
-} elseif (isset ($_GET['ids']) && !empty ($_GET['ids'])) {
+} elseif (isset($_GET['ids']) && !empty($_GET['ids'])) {
     $ids = explode(',', $_GET['ids']);
-    $conn = connectToDatabase();
+    deleteFilesByIds($conn, $ids);
     deleteTodosByIds($conn, $ids);
     $conn->close();
     header("Location: /");
-    exit(); // Ensure no further execution after redirection
+    exit();
 
 } else {
     echo "Error: No todo IDs provided.";

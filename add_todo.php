@@ -1,37 +1,29 @@
 <?php
 
-$conn = new mysqli('localhost', 'baki', 'user_baki_pass', 'todoapp');
+include "db_conn.php";
 
-if ($conn->connect_error) {
-   die("Connection failed: " . $conn->connect_error);
-}
-
-$task = htmlspecialchars($_POST['task']);
-$description = htmlspecialchars($_POST['description']);
+$task = htmlspecialchars($_POST['task'] ?? '');
+$description = htmlspecialchars($_POST['description'] ?? '');
 $completed = isset($_POST['completed']) ? 1 : 0;
 
 $stmt = $conn->prepare("INSERT INTO todos (task, description, completed) VALUES (?, ?, ?)");
 
 if ($stmt) {
-   $stmt->bind_param("ssi", $task, $description, $completed);
-   $stmt->execute();
+    $stmt->bind_param("ssi", $task, $description, $completed);
+    $stmt->execute();
 
-   $todo_id = $stmt->insert_id;
+    $todo_id = $stmt->insert_id;
 
-   $uploadDir = "uploads/" . $todo_id;
-   if (!file_exists($uploadDir)) {
-       mkdir($uploadDir, 0777, true);
-   }
+    $uploadDir = "uploads/files/$todo_id/";
+    if (!file_exists($uploadDir)) {
+        if (!mkdir($uploadDir, 0777, true)) {
+            die("Failed to create directory");
+        }
+    }
 
-   $stmt->close();
-}
+    include "upload_files.php";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["attachment"])) {
-   $targetDir = "uploads/" . $todo_id . "/";
-   $targetFile = $targetDir . basename($_FILES["attachment"]["name"]);
-
-   move_uploaded_file($_FILES["attachment"]["tmp_name"], $targetFile);
-
+    $stmt->close();
 }
 
 $conn->close();

@@ -19,9 +19,12 @@ include "header.php";
         </div>
         <ol class="mt-3">
             <?php
-            $conn = new mysqli('localhost', 'baki', 'user_baki_pass', 'todoapp');
+
+            include "db_conn.php";
 
             $sql = "ALTER TABLE todos AUTO_INCREMENT = 1";
+            $conn->query($sql);
+            $sql = "ALTER TABLE files AUTO_INCREMENT = 1";
             $conn->query($sql);
 
             $sql = "SELECT * FROM todos ORDER BY id DESC";
